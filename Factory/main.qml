@@ -42,12 +42,12 @@ ApplicationWindow {
                 }
             }
         }
-        Row{
+        Column{
             spacing: 5
             Repeater{
                 model: building.workersList.length
                 Text{
-                    text: building.workersList[index].idName + " : " + building.workersList[index].progress
+                    text: building.workersList[index].idName + " : " + building.workersList[index].progress + " - " +building.workersList[index].progressMessage
                 }
             }
         }

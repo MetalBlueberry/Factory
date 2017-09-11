@@ -7,5 +7,7 @@ setup(name='Factory',
       author='MetalBlueberry',
       author_email='MetalBlueberry@example.com',
       license='GNU',
-      packages=['RecursiveUncompress'],
+      packages=['Factory'],
+      # data_files=[('qml', ['Factory/main.qml'])]
+      package_data = {'Factory': ['*.qml']},
       )

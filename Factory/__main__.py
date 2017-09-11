@@ -8,6 +8,7 @@ from time import sleep
 import random
 
 import sys
+import os
 from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QGuiApplication
 from PyQt5.QtQml import QQmlApplicationEngine
@@ -17,7 +18,7 @@ app = QGuiApplication(sys.argv)
 register("Factory")
 
 engine = QQmlApplicationEngine()
-engine.load(QUrl("main.qml"))
+engine.load(QUrl(os.path.dirname(__file__) + "/main.qml"))
 
 # find building
 childrens = engine.rootObjects()[0].children()
@@ -29,23 +30,26 @@ for children in childrens:
 if building is None:
     raise Exception("Building missing, add it to the root")
 
-building.add_storage(Storage(capacity=100, name="input"))
-building.add_storage(Storage(capacity=1), storage_name="task1_storage")
-building.add_storage(Storage(capacity=100), storage_name="output")
+building.add_storage(Storage(capacity=100), storage_name="_input")
+building.add_storage(Storage(capacity=1), storage_name="1_temp")
+building.add_storage(Storage(capacity=2), storage_name="2_temp")
+building.add_storage(Storage(capacity=1), storage_name="3_temp")
+building.add_storage(Storage(capacity=100), storage_name="_output")
 
-building.add_worker(Worker(building.storages["input"], building.storages["task1_storage"], name="task1"))
-building.add_worker(Worker(building.storages["input"], building.storages["task1_storage"], name="task1_2"))
-building.add_worker(Worker(building.storages["task1_storage"], building.storages["output"]), worker_name="task2")
+building.add_worker(Worker(building.storages["_input"], building.storages["1_temp"]), worker_name="task1")
+building.add_worker(Worker(building.storages["1_temp"], building.storages["2_temp"]), worker_name="task2")
+building.add_worker(Worker(building.storages["2_temp"], building.storages["3_temp"]), worker_name="task3")
+building.add_worker(Worker(building.storages["3_temp"], building.storages["_output"]), worker_name="task4")
 
 building.start_workers()
 
 
 def check_finished():
-    if building.storages["output"].itemCount == 5:
+    if building.storages["_output"].itemCount == 5:
         app.quit()
 
 
-building.storages["output"].itemCountChanged.connect(check_finished)
+building.storages["_output"].itemCountChanged.connect(check_finished)
 
 sleep(1)
 print("STARTING")
@@ -75,32 +79,14 @@ class DummyWork(WorkingItem):
 test = DummyWork(1)
 
 
-def print_progress():
-    print("progress: " + str(building.workers["task1"].progress) + " - " + building.workers["task1"].progressMessage)
 
 
-building.workers["task1"].progressChanged.connect(print_progress)
-building.storages["input"].add_item(test)
 for i in range(0, 4):
-    building.storages["input"].add_item(DummyWork(i))
+    building.storages["_input"].add_item(DummyWork(i))
 
-
-def storage_1_capacity():
-    print("Item count storage 1: " + str(building.storages["task1_storage"].itemCount))
-
-
-building.storages["task1_storage"].itemCountChanged.connect(storage_1_capacity)
 
 app.exec()
 
-# while remaining:
-#     building.storages["output"].acquire()
-#     building.storages["output"].wait_for(building.storages["output"].is_not_empty)
-#     item = building.storages["output"].pick_item()
-#     building.storages["output"].release()
-#     remaining -= 1
-#     print("Completed, " + str(remaining) + " remaining")
-#     print(item)
 print("ALL WORK FINISHED")
 building.stop_workers()
 
