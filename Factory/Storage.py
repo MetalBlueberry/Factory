@@ -45,6 +45,12 @@ class Storage(QObject):
     def items(self):
         return QQmlListProperty(WorkingItem, self, self._items)
 
+    idNameChanged = pyqtSignal()
+
+    @pyqtProperty(str, notify=idNameChanged)
+    def idName(self):
+        return self.id_name
+
     # queue functions
     def add_item(self, item):
         # print(self.id_name + ": adding")
@@ -80,3 +86,12 @@ class Storage(QObject):
 
     def is_not_full(self):
         return not self.is_full()
+
+    def __le__(self, other):
+        return self.id_name.__le__(other)
+
+    def __lt__(self, other):
+        return self.id_name.__lt__(other)
+
+    def __eq__(self, other):
+        return self.id_name.__eq__(other)
