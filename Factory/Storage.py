@@ -1,7 +1,7 @@
 from threading import Condition
 from collections import deque
 
-from PyQt5.QtCore import pyqtProperty, pyqtSignal, QObject
+from PyQt5.QtCore import pyqtProperty, pyqtSignal, QObject, pyqtSlot
 from PyQt5.QtQml import QQmlListProperty
 
 from Factory.WorkingItem import WorkingItem
@@ -42,7 +42,10 @@ class Storage(QObject):
     itemsChanged = pyqtSignal()
 
     def append(self, list, item):
+        self.acquire()
         self._items.append(item)
+        self.notify_all()
+        self.release()
 
     def count(self, list):
         return len(self._items)
@@ -55,8 +58,7 @@ class Storage(QObject):
 
     @pyqtProperty(QQmlListProperty, notify=itemCountChanged)
     def items(self):
-        return QQmlListProperty(WorkingItem, self,append=self.append, count=self.count, at=self.at, clear=self.clear)
-
+        return QQmlListProperty(WorkingItem, self, append=self.append, count=self.count, at=self.at, clear=self.clear)
 
     idNameChanged = pyqtSignal()
 
@@ -65,6 +67,7 @@ class Storage(QObject):
         return self.id_name
 
     # queue functions
+    @pyqtSlot(WorkingItem)
     def add_item(self, item):
         # print(self.id_name + ": adding")
         self.acquire()

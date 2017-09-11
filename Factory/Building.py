@@ -49,7 +49,6 @@ class Building(QQuickItem):
 
     @defaultOutput.setter
     def defaultOutput(self, value):
-        print("Setting default input")
         self._default_output = value
         self.defaultOutputChanged.emit()
 

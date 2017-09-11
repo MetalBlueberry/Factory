@@ -32,25 +32,37 @@ ApplicationWindow {
 
     }
     Column{
-        anchors.centerIn: parent
+        anchors.right: parent.right
+        anchors.top: parent.top
         spacing: 10
+        width: parent.width/2
         Button{
 
             text: "check"
             onClicked:{
                 loadFileDialog.open()
             }
+
             FileDialog{
                 id: loadFileDialog
                 title: "Please choose input files"
                 folder: shortcuts.home
                 selectExisting: true
-                selectMultiple: false
-                selectFolder: true
+                selectMultiple: true
+                selectFolder: false
 
                 onAccepted: {
                     console.log("You chose: " + loadFileDialog.folder)
 
+                    for (var x = 0 ; x < loadFileDialog.fileUrls.length; x++){
+                        console.log(loadFileDialog.fileUrls[x])
+                        var newObject = Qt.createQmlObject('import QtQuick 2.7;import Factory 1.0; FileWork {}',
+                                                           loadFileDialog,
+                                                           "dynamicSnippet1");
+
+                        newObject.filename = loadFileDialog.fileUrls[x]
+                        building.defaultInput.add_item (newObject)
+                    }
                 }
                 onRejected: {
                     console.log("Canceled")
