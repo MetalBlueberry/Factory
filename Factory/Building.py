@@ -8,8 +8,10 @@ from Factory.WorkingItem import WorkingItem
 
 
 class Building(QQuickItem):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, default_input=None, default_output=None):
         super().__init__(parent=parent)
+        self._default_input = default_input
+        self._defaout_output = default_output
         self.storages = dict()
         self.workers = dict()
         self.id = "factory"
@@ -17,16 +19,41 @@ class Building(QQuickItem):
     # Qt Properties
     storagesChanged = pyqtSignal()
 
-
     @pyqtProperty(QQmlListProperty, notify=storagesChanged)
     def storagesList(self):
-        return QQmlListProperty(Storage, self, sorted(list(self.storages.values()),key=lambda storages: storages.id_name))
+        return QQmlListProperty(Storage, self,
+                                sorted(list(self.storages.values()), key=lambda storages: storages.id_name))
 
     workersChanged = pyqtSignal()
 
     @pyqtProperty(QQmlListProperty, notify=workersChanged)
     def workersList(self):
-        return QQmlListProperty(Worker, self, sorted(list(self.workers.values()),key=lambda worker: worker.id_name))
+        return QQmlListProperty(Worker, self, sorted(list(self.workers.values()), key=lambda worker: worker.id_name))
+
+    defaultInputChanged = pyqtSignal()
+
+    @pyqtProperty(Storage, notify=defaultInputChanged)
+    def defaultInput(self):
+        return self._default_input
+
+    @defaultInput.setter
+    def defaultInput(self, value):
+        self._default_input = value
+        self.defaultInputChanged.emit()
+
+    defaultOutputChanged = pyqtSignal()
+
+    @pyqtProperty(Storage, notify=defaultOutputChanged)
+    def defaultOutput(self):
+        return self._default_output
+
+    @defaultOutput.setter
+    def defaultOutput(self, value):
+        print("Setting default input")
+        self._default_output = value
+        self.defaultOutputChanged.emit()
+
+    # python functions
 
     def add_storage(self, storage: Storage, storage_name: str = None):
         if storage_name is None:
@@ -63,5 +90,5 @@ class Building(QQuickItem):
     def stop_workers(self):
         for name, worker in self.workers.items():
             worker.stop()
-        # for name, worker in self.workers.items():
-        #     worker.join()
+            # for name, worker in self.workers.items():
+            #     worker.join()

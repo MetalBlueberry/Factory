@@ -1,4 +1,4 @@
-from PyQt5.QtQml import qmlRegisterType
+from PyQt5.QtQml import qmlRegisterType, qmlRegisterUncreatableType
 from Factory.Storage import Storage
 from Factory.WorkingItem import WorkingItem
 from Factory.Worker import Worker
@@ -7,6 +7,6 @@ from Factory.Building import Building
 
 def register(uri):
     qmlRegisterType(Building, uri, 1, 0, "Building")
-    qmlRegisterType(Storage, uri, 1, 0, "Storage")
-    qmlRegisterType(Worker, uri, 1, 0, "Worker")
-    qmlRegisterType(WorkingItem, uri, 1, 0, "WorkingItem")
+    qmlRegisterUncreatableType(Storage, uri, 1, 0, "Storage", "Not allowed, use python instead")
+    qmlRegisterUncreatableType(Worker, uri, 1, 0, "Worker", "Not allowed, use python instead")
+    qmlRegisterUncreatableType(WorkingItem, uri, 1, 0, "WorkingItem", "Not allowed, use python instead")

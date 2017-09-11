@@ -41,9 +41,22 @@ class Storage(QObject):
 
     itemsChanged = pyqtSignal()
 
-    @pyqtProperty(QQmlListProperty, notify=itemsChanged)
+    def append(self, list, item):
+        self._items.append(item)
+
+    def count(self, list):
+        return len(self._items)
+
+    def at(self, list, index):
+        return self._items[index]
+
+    def clear(self, list):
+        self._items.clear()
+
+    @pyqtProperty(QQmlListProperty, notify=itemCountChanged)
     def items(self):
-        return QQmlListProperty(WorkingItem, self, self._items)
+        return QQmlListProperty(WorkingItem, self,append=self.append, count=self.count, at=self.at, clear=self.clear)
+
 
     idNameChanged = pyqtSignal()
 

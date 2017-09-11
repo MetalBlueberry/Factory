@@ -28,12 +28,12 @@ for children in childrens:
         building = children
         break
 if building is None:
-    raise Exception("Building missing, add it to the root")
+    raise Exception("Building missing, add it to the window in qml")
 
 building.add_storage(Storage(capacity=100), storage_name="_input")
-building.add_storage(Storage(capacity=1), storage_name="1_temp")
-building.add_storage(Storage(capacity=2), storage_name="2_temp")
-building.add_storage(Storage(capacity=1), storage_name="3_temp")
+building.add_storage(Storage(capacity=5), storage_name="1_temp")
+building.add_storage(Storage(capacity=5), storage_name="2_temp")
+building.add_storage(Storage(capacity=5), storage_name="3_temp")
 building.add_storage(Storage(capacity=100), storage_name="_output")
 
 building.add_worker(Worker(building.storages["_input"], building.storages["1_temp"]), worker_name="task1")
@@ -42,16 +42,17 @@ building.add_worker(Worker(building.storages["2_temp"], building.storages["3_tem
 building.add_worker(Worker(building.storages["3_temp"], building.storages["_output"]), worker_name="task4")
 
 building.start_workers()
+building.defaultInput = building.storages["_input"]
+building.defaultOutput = building.storages["_output"]
 
+# def check_finished():
+#     if building.storages["_output"].itemCount == 5:
+#         app.quit()
+#
+#
+# building.storages["_output"].itemCountChanged.connect(check_finished)
 
-def check_finished():
-    if building.storages["_output"].itemCount == 5:
-        app.quit()
-
-
-building.storages["_output"].itemCountChanged.connect(check_finished)
-
-sleep(1)
+# sleep(1)
 print("STARTING")
 
 
@@ -59,14 +60,15 @@ class DummyWork(WorkingItem):
     def __init__(self, id):
         super().__init__()
         self.id = id
+        self.working_time = random.randrange(0, 1000)/ 1000
+        self.description = str(id) + " for " + str(self.working_time)
 
     def do_work(self):
-        working_time = random.randrange(5, 10)
         # print(str(self.id) + ": working for " + str(working_time))
-        self.set_progress_message("starting")
+        self.set_progress_message("processing")
         for i in range(0, 10):
             self.set_progress(i / 10)
-            sleep(working_time / 10)
+            sleep(self.working_time / 10)
             if i == 5:
                 self.set_progress_message("half done")
         self.set_progress(1)
@@ -76,12 +78,7 @@ class DummyWork(WorkingItem):
         return DummyWork(10 + self.id)
 
 
-test = DummyWork(1)
-
-
-
-
-for i in range(0, 4):
+for i in range(0, 100):
     building.storages["_input"].add_item(DummyWork(i))
 
 

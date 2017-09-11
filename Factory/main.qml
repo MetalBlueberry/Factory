@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.3
 import QtQuick.Window 2.3
 import Factory 1.0
 
+import QtQuick.Dialogs 1.2
 
 ApplicationWindow {
     visible: true
@@ -14,26 +15,51 @@ ApplicationWindow {
 
     Building{
         id:building
+        onDefaultInputChanged: {
+
+            console.log(building.defaultInput)
+            console.log(building.defaultInput.items)
+        }
+    }
+    Column{
+        spacing: 5
+        Repeater{
+            model: building.defaultInput.items.length
+            Text{
+                text: building.defaultInput.items[index].description
+            }
+        }
 
     }
     Column{
         anchors.centerIn: parent
+        spacing: 10
         Button{
 
             text: "check"
             onClicked:{
-                console.log("Clicked")
-                var x = 0
-                for( x= 0; x < base.contentItem.children.length; x++){
-                    console.log(base.contentItem.children[x])
+                loadFileDialog.open()
+            }
+            FileDialog{
+                id: loadFileDialog
+                title: "Please choose input files"
+                folder: shortcuts.home
+                selectExisting: true
+                selectMultiple: false
+                selectFolder: true
+
+                onAccepted: {
+                    console.log("You chose: " + loadFileDialog.folder)
+
+                }
+                onRejected: {
+                    console.log("Canceled")
+
                 }
             }
         }
-        Text {
-            id: name
-            text: building.storagesList.length
-        }
-        Row{
+
+        Column{
             spacing: 5
             Repeater{
                 model: building.storagesList.length
@@ -52,14 +78,6 @@ ApplicationWindow {
             }
         }
 
-    }
-    Component.onCompleted: {
-        var x = 0
-        console.log("contents")
-        console.log(base.contentItem)
-        for( x= 0; x < base.contentItem.children.length; x++){
-            console.log(base.contentItem.children[x])
-        }
     }
 
 }

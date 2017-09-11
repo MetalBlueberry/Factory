@@ -1,4 +1,4 @@
-from PyQt5.QtCore import pyqtProperty, pyqtSignal, QRunnable, QObject
+from PyQt5.QtCore import pyqtProperty, pyqtSignal, QObject
 
 
 class WorkingItem(QObject):
@@ -7,6 +7,7 @@ class WorkingItem(QObject):
         self._progress = 0
         self._message = ""
         self._work = None
+        self._description = ""
 
     # Qt Properties
     progressChanged = pyqtSignal()
@@ -31,13 +32,14 @@ class WorkingItem(QObject):
             self._message = message
             self.progressMessageChanged.emit()
 
-    workChanged = pyqtSignal()
+    descriptionChanged = pyqtSignal()
 
-    @pyqtProperty(QRunnable, notify=workChanged)
-    def work(self):
-        return self._work
+    @pyqtProperty(str, notify=descriptionChanged)
+    def description(self):
+        return self._description
 
-    @work.setter
-    def work(self, value):
-        self._work = value
-        self.workChanged.emit()
+    @description.setter
+    def description(self, value):
+        if value != self._description:
+            self._description = value
+            self.descriptionChanged.emit()
