@@ -24,7 +24,8 @@ class UncompressWork(WorkingItem):
     def do_work(self):
         self.set_progress(0)
         self.set_progress_message("Extracting file")
-        file = CompressedFile(self._filename[7:])
+        file = CompressedFile(self._filename)
+
         file.recursive_uncompress()
         self.set_progress_message("Done")
         self.set_progress(1)

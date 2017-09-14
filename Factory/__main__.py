@@ -71,7 +71,9 @@ qmlRegisterType(DummyWork, "Factory", 1, 0, "DummyWork")
 qmlRegisterType(PrintFileName, "Factory", 1, 0, "FileWork")
 
 engine = QQmlApplicationEngine()
-engine.load(QUrl(os.path.dirname(__file__) + "/main.qml"))
+engine.load(QUrl("Factory/main.qml"))
+print("main.qml")
+print(engine.rootObjects())
 
 building = find_building_in_engine(engine)
 
